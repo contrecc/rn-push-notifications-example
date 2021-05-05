@@ -16,17 +16,22 @@ Notifications.setNotificationHandler({
 export default function App() {
   useEffect(() => {
     (async function checkPermissions() {
-      const checkStatusObject = await Permissions.getAsync(
-        Permissions.NOTIFICATIONS
-      );
-      if (checkStatusObject.status !== "granted") {
-        const askStatusObject = await Permissions.askAsync(
+      try {
+        const checkStatusObject = await Permissions.getAsync(
           Permissions.NOTIFICATIONS
         );
-        if (askStatusObject.status !== "granted") {
-          alert("You must give permission in order to see notifications.");
-          return;
+        if (checkStatusObject.status !== "granted") {
+          const askStatusObject = await Permissions.askAsync(
+            Permissions.NOTIFICATIONS
+          );
+          if (askStatusObject.status !== "granted") {
+            throw new Error("Permission not granted for notifications");
+          }
         }
+        const data = await Notifications.getExpoPushTokenAsync();
+        console.log(data);
+      } catch (error) {
+        console.log(error.message);
       }
     })();
   }, []);
