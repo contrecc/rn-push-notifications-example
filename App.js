@@ -30,6 +30,28 @@ export default function App() {
       }
     })();
   }, []);
+
+  useEffect(() => {
+    // Listener is called when a user interacts with a notification
+    const backgroundSubscription = Notifications.addNotificationResponseReceivedListener(
+      (response) => {
+        console.log(response);
+      }
+    );
+
+    // Listener is called when a notification is received while the app is running
+    const foregroundSubscription = Notifications.addNotificationReceivedListener(
+      (notification) => {
+        console.log(notification);
+      }
+    );
+
+    return () => {
+      backgroundSubscription.remove();
+      foregroundSubscription.remove();
+    };
+  }, []);
+
   const triggerNotificationHandler = () => {
     Notifications.scheduleNotificationAsync({
       content: {
